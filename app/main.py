@@ -1,7 +1,9 @@
 from fastapi import FastAPI
+from app.core.config import settings
 
-app = FastAPI(title = 'Imgx - Image Processing API')
+app = FastAPI(title = 'Imgx - Image Processing API',version='0.1.0')
 
-@app.get('/')
+@app.get("/")
 def status_check():
-    return 'imagex is running'
+    return {'status' : 'running',
+            'project' : settings.PROJECT_NAME}
