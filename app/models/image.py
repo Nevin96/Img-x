@@ -13,5 +13,6 @@ class Image(Base):
     height : Mapped[int]
     format : Mapped[str]
     size_bytes : Mapped[int]
-    email_id : Mapped[String] = mapped_column( ForeignKey('users.email',ondelete='CASCADE'))
+    owner_id : Mapped[String] = mapped_column( ForeignKey('users.email',ondelete='CASCADE'))
     owner = relationship('User' ,backref='images')
+    
