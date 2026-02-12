@@ -8,7 +8,7 @@ class Image(Base):
 
     id : Mapped[int] = mapped_column(primary_key=True)
     filename : Mapped[str] = mapped_column(String,index=True)
-    filepath : Mapped[str]
+    file_path : Mapped[str]
     width : Mapped[int]
     height : Mapped[int]
     format : Mapped[str]
