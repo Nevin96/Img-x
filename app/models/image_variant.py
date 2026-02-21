@@ -8,6 +8,7 @@ class ImageVariant(Base):
 
     id : Mapped[int] = mapped_column(primary_key=True)
     image_id : Mapped[int] = mapped_column(ForeignKey("images.id",ondelete="CASCADE"))
+    file_path : Mapped[str]
     width : Mapped[int]
     height : Mapped[int]
     format : Mapped[str]

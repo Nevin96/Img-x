@@ -15,7 +15,7 @@ def create_thumbnail(input_path : str,output_path:str,size = (200,200)):
         img.thumbnail(size)
         img.save(output_path)
 
-def conver_format(input_path : str,output_path : str,format : str):
+def convert_format(input_path : str,output_path : str,format : str):
     with PILImage.open(input_path) as img:
         rgb = img.convert("RGB")
         rgb.save(output_path,format=format.upper())
