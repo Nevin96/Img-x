@@ -13,4 +13,5 @@ wheels/
 
 *.db
 
-media/images/
+media/
+migrations/
