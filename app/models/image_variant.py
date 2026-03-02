@@ -1,6 +1,6 @@
 from sqlalchemy import ForeignKey,String,Integer
 from sqlalchemy.orm import Mapped,mapped_column,relationship
-
+from sqlalchemy import UniqueConstraint
 from app.db.base import Base
 
 class ImageVariant(Base):
@@ -15,3 +15,4 @@ class ImageVariant(Base):
     variant_type : Mapped[str]
 
     image = relationship("Image",backref="variants")
+    __table_args__ = (UniqueConstraint("image_id","width","height","format"),)

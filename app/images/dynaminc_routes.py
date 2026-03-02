@@ -3,6 +3,7 @@ from uuid import uuid4
 from fastapi import APIRouter,Depends,HTTPException
 from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 
 from app.db.deps import get_db
 from app.auth.deps import get_current_user
@@ -33,15 +34,23 @@ def dynamic_router(
     new_name = f"{uuid4()}.jpg"
     output_path = f"media/variants/{new_name}"
     resize_image(image.file_path,output_path,w,h)
-
-    variant = ImageVariant(
-        image_id = image_id,
-        file_path = output_path,
-        width = w,
-        height = h,
-        format = 'JPEG',
-        variant_type = 'dynamic'
-    )
-    db.add(variant)
-    db.commit()
-    return FileResponse(output_path)
+    try:
+        variant = ImageVariant(
+            image_id = image_id,
+            file_path = output_path,
+            width = w,
+            height = h,
+            format = 'JPEG',
+            variant_type = 'dynamic'
+        )
+        db.add(variant)
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        variant = db.query(ImageVariant).filter(
+            ImageVariant.image_id == image_id,
+            ImageVariant.height == h,
+            ImageVariant.width == w,
+            ImageVariant.format == "JPEG"
+        ).first()
+    return FileResponse(variant.file_path)
