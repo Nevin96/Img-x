@@ -4,10 +4,12 @@ from uuid import uuid4
 from fastapi import APIRouter,UploadFile,HTTPException,Depends,File
 from sqlalchemy.orm import Session
 from PIL import Image as PILImage
+from fastapi import Query
 
 from app.db.deps import get_db
 from app.models.image import Image
 from app.schemas.image import ImageResponse
+from app.schemas.image import PaginatedImages
 from app.auth.deps import get_current_user
 
 router = APIRouter(prefix='/images',tags=['image'])
@@ -49,3 +51,26 @@ def upload_image(
     db.refresh(image)
 
     return image
+
+@router.get("/",response_model=PaginatedImages)
+def list_images(
+        page : int = Query(1,ge=1),
+        limit : int = Query(10,ge=1,le = 100),
+        user_id : str = Depends(get_current_user),
+        db : Session = Depends(get_db)
+):
+    query = db.query(Image).filter(Image.owner_id == int(user_id))
+    total = query.count()
+    images = (
+        query.order_by(Image.id.desc())
+        .offset((page-1) * limit)
+        .limit(limit)
+        .all()
+    )
+
+    return {
+        "total" : total,
+        "page" : page,
+        "limit" : limit,
+        'items' : images
+    }

@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import List
 
 class ImageResponse(BaseModel):
     id: int
@@ -10,3 +11,9 @@ class ImageResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+class PaginatedImages(BaseModel):
+    total : int
+    page : int
+    limit : int
+    items : List[ImageResponse]
