@@ -1,11 +1,13 @@
 import os 
 from uuid import uuid4
+import time
 
 from fastapi import APIRouter,UploadFile,HTTPException,Depends,File
 from sqlalchemy.orm import Session
 from PIL import Image as PILImage
 from fastapi import Query
 
+from app.core.signing import generate_signature
 from app.db.deps import get_db
 from app.models.image import Image
 from app.schemas.image import ImageResponse
@@ -73,4 +75,32 @@ def list_images(
         "page" : page,
         "limit" : limit,
         'items' : images
+    }
+
+@router.post("/{image_id}/signed-url")
+def generate_signed_url(
+    image_id : int,
+    w : int,
+    h : int,
+    user_id : str = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    image = db.query(Image).filter(
+        Image.id == image_id,
+        Image.owner_id == int(user_id)
+    ).first()
+
+    if not image:
+        raise HTTPException(404,'Image not found')
+    expires = int(time.time()) + 300
+
+    params = {
+        "image_id":image_id,
+        "w":w,
+        "h":h,
+        "expires":expires
+    }
+    signature = generate_signature(params)
+    return {
+        "url" : f"/images/{image_id}?w={w}&h={h}&expires={expires}&sig={signature}"
     }
