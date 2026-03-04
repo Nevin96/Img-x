@@ -185,7 +185,3 @@ GET /images/{id}/variant?width=300&height=300
 
 **Nevin Babu**
 
-
-## License
-
-MIT License
