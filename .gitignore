@@ -1,5 +1,6 @@
 # Python-generated files
 __pycache__/
+.pytest_cache/
 *.py[oc]
 build/
 dist/
@@ -15,3 +16,4 @@ wheels/
 
 media/
 migrations/
+tests/sample.jpg
